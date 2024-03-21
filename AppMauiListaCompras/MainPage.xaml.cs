@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using AppMauiListaCompras.Models;
 
 namespace AppMauiListaCompras
@@ -21,18 +22,15 @@ namespace AppMauiListaCompras
 
         }
 
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
            if(lista_produto.Count ==0) 
            {
-                Task.Run(async () =>
-                {
                     List<Produto> tmp = await App.Db.GetAll();
                     foreach (Produto p in tmp)
                     {
                         lista_produto.Add(p);
                     }
-                });
            }
         }
 
@@ -64,24 +62,42 @@ namespace AppMauiListaCompras
             //ref.IsRefreshing = false;
         }
 
-        private void ToolbarItem_Clicked_Add(object sender, EventArgs e)
+        private async void ToolbarItem_Clicked_Add(object sender, EventArgs e)
         {
-
+            await Navigation.PushAsync(new Views.NovoProduto());
         }
 
         private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-
+            Produto? p = e.SelectedItem as Produto;
+            Navigation.PushAsync(new Views.EditarProdutos
+            {
+                BindingContext = p
+            });
         }
         
 
         
-        private void MenuItem_Clicked_remover(object sender, EventArgs e)
+        private async void MenuItem_Clicked_remover(object sender, EventArgs e)
         {
+            try
+            {
+                MenuItem selecionado = (MenuItem)sender;
 
-        }
+                Produto p = selecionado.BindingContext as Produto;
 
-        
+                bool confirm = await DisplayAlert(
+                    "Tem certeza?", "Remover Produto?",
+                    "Sim", "Cancelar");
+
+                if (confirm)
+                {
+                    await App.Db.Delete(p.Id);
+                    await DisplayAlert("Sucesso!",
+                        "Produto Removido", "OK");
+                }
+
+            } catch { }
+        }        
     }
-
 }

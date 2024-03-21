@@ -25,5 +25,12 @@ namespace AppMauiListaCompras
                 return _db;
             } //fecha método get
         } //fecha propriedade Db
+
+        public App()
+        {
+            InitializeComponent();
+
+            MainPage = new AppShell();
+        }
     }
 }
