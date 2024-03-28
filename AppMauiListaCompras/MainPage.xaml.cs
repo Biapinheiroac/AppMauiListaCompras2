@@ -34,18 +34,17 @@ namespace AppMauiListaCompras
            }
         }
 
-        private void txt_search_TextChanged(object sender, TextChangedEventArgs e)
+        private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
         {
             string q = e.NewTextValue;
             lista_produto.Clear();
-            Task.Run(async () =>
-            {
+           
                 List<Produto> tmp = await App.Db.Search(q);
                 foreach (Produto p in tmp)
                 {
                     lista_produto.Add(p);
                 }
-            });
+           
         }
 
         private void ref_carregando_Refreshing(object sender, EventArgs e)
